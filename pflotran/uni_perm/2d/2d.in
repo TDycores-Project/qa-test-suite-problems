@@ -1,0 +1,186 @@
+#Description: 1D variably saturated flow problem
+
+SIMULATION
+  SIMULATION_TYPE SUBSURFACE
+  PROCESS_MODELS
+    SUBSURFACE_FLOW flow
+      MODE RICHARDS
+    /
+  /
+END
+
+SUBSURFACE
+
+#=========================== regression =======================================
+#=========================== solver options ===================================
+LINEAR_SOLVER FLOW
+  SOLVER DIRECT
+END
+
+#=========================== discretization ===================================
+GRID
+  TYPE STRUCTURED
+  NXYZ 10 10 1
+  BOUNDS
+    0.d0 0.d0 0.d0
+    1.d0 1.d0 1.d0
+  /
+END
+
+#=========================== material properties ==============================
+MATERIAL_PROPERTY soil1
+  ID 1
+  POROSITY 1.d0
+  PERMEABILITY
+    PERM_ISO 1.d-12
+  /
+  CHARACTERISTIC_CURVES cc1
+END
+
+MATERIAL_PROPERTY soil2
+  ID 2
+  POROSITY 1.d0
+  PERMEABILITY
+    PERM_ISO 1.d-13
+  /
+  CHARACTERISTIC_CURVES cc1
+END
+
+#=========================== characteristic curves ============================
+CHARACTERISTIC_CURVES cc1
+  DEFAULT
+END
+
+#=========================== output options ===================================
+OUTPUT
+  FORMAT HDF5
+END
+
+#=========================== times ============================================
+TIME
+  FINAL_TIME 1.d6 y
+  INITIAL_TIMESTEP_SIZE 1.d0 h
+  MAXIMUM_TIMESTEP_SIZE 1.d6 y
+END
+
+#=========================== regions ==========================================
+REGION all
+  COORDINATES
+    0.d0 0.d0 0.d0
+    1.d0 1.d0 1.d0
+  /
+END
+
+REGION block1
+  COORDINATES
+    0.d0 0.d0 0.d0
+    0.5d0 0.5d0 1.d0
+  /
+END
+
+REGION block4
+  FACE BOTTOM
+  COORDINATES
+    0.5d0 0.5d0 0.d0
+    1.d0 1.d0 1.d0
+  /
+END
+
+REGION west
+  FACE WEST
+  COORDINATES
+    0.d0 0.d0 0.d0
+    0.d0 0.5d0 1.d0
+  /
+END
+
+REGION south
+  FACE SOUTH
+  COORDINATES
+    0.d0 0.d0 0.d0
+    0.5d0 0.d0 1.d0
+  /
+END
+
+REGION east
+  FACE EAST
+  COORDINATES
+    1.d0 0.5d0 0.d0
+    1.d0 1.d0 1.d0
+  /
+END
+
+REGION north
+  FACE NORTH
+  COORDINATES
+    0.5d0 1.d0 0.d0
+    1.d0 1.d0 1.d0
+  /
+END
+
+#=========================== flow conditions ==================================
+FLOW_CONDITION initial_pressure
+  TYPE
+    PRESSURE DIRICHLET
+  /
+  PRESSURE 2.d6
+END
+
+FLOW_CONDITION low_pressure
+  TYPE
+    PRESSURE DIRICHLET
+  /
+  PRESSURE 1.d6
+END
+
+FLOW_CONDITION high_pressure
+  TYPE
+    PRESSURE DIRICHLET
+  /
+  PRESSURE 3.d6
+END
+
+#=========================== condition couplers ===============================
+# initial condition
+INITIAL_CONDITION
+  FLOW_CONDITION initial_pressure
+  REGION all
+END
+
+BOUNDARY_CONDITION east
+  FLOW_CONDITION low_pressure
+  REGION east
+END
+
+BOUNDARY_CONDITION north
+  FLOW_CONDITION low_pressure
+  REGION north
+END
+
+BOUNDARY_CONDITION west
+  FLOW_CONDITION high_pressure
+  REGION west
+END
+
+BOUNDARY_CONDITION south
+  FLOW_CONDITION high_pressure
+  REGION south
+END
+
+#=========================== stratigraphy couplers ============================
+STRATA
+  REGION all
+  MATERIAL soil1
+END
+
+STRATA
+  REGION block1
+  MATERIAL soil2
+END
+
+STRATA
+  REGION block4
+  MATERIAL soil2
+END
+
+END_SUBSURFACE
