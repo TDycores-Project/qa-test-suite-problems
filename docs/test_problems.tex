@@ -100,5 +100,15 @@ The 2D block permeability problem shown in Figure~\ref{fig:2d_block} has a perme
   \label{fig:2d_block}
 \end{figure}
 
+\newpage
+\subsection{Block Permeability with Graded Pressure}
+The 2D block permeability problem shown in Figure~\ref{fig:2d_block} has a permeability of $10^{-13}$ m$^2$ in the lower left and upper right quadrants and $10^{-12}$ m$^2$ in the upper left and lower right quadrants. The Dirichlet pressure boundary condition is assigned to all boundaries with a linear gradient between 3 MPa at the lower left corner and 1 MPa at the upper right corner, and 2 MPa at the opposite corners.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figs/2d_block_graded.pdf}
+  \caption{Schematic of 2D block permeability problem with a graded pressure boundary condition.}
+  \label{fig:2d_block_graded}
+\end{figure}
+
 \end{document}
 
