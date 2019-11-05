@@ -11,11 +11,16 @@ END
 
 SUBSURFACE
 
+DEBUG
+#  PRINT_JACOBIAN
+END
+
 #=========================== fluid properties ================================
 EOS WATER
   DENSITY CONSTANT 1.d3
   VISCOSITY CONSTANT 1.d-3
 END
+
 #=========================== regression =======================================
 #=========================== solver options ===================================
 LINEAR_SOLVER FLOW
@@ -25,7 +30,7 @@ END
 #=========================== discretization ===================================
 GRID
   TYPE STRUCTURED
-  NXYZ 100 100 1
+  NXYZ 500 500 1
   BOUNDS
     0.d0 0.d0 0.d0
     1.d0 1.d0 1.d0
@@ -127,6 +132,12 @@ REGION north
   /
 END
 
+#=========================== datasets =========================================
+DATASET test_surface
+  FILENAME dataset.h5
+  HDF5_DATASET_NAME test_surface
+END
+
 #=========================== flow conditions ==================================
 FLOW_CONDITION initial_pressure
   TYPE
@@ -135,18 +146,11 @@ FLOW_CONDITION initial_pressure
   PRESSURE 2.d6
 END
 
-FLOW_CONDITION low_pressure
+FLOW_CONDITION boundary_pressure
   TYPE
     PRESSURE DIRICHLET
   /
-  PRESSURE 1.d6
-END
-
-FLOW_CONDITION high_pressure
-  TYPE
-    PRESSURE DIRICHLET
-  /
-  PRESSURE 3.d6
+  PRESSURE DATASET test_surface
 END
 
 #=========================== condition couplers ===============================
@@ -157,22 +161,22 @@ INITIAL_CONDITION
 END
 
 BOUNDARY_CONDITION east
-  FLOW_CONDITION low_pressure
+  FLOW_CONDITION boundary_pressure
   REGION east
 END
 
 BOUNDARY_CONDITION north
-  FLOW_CONDITION low_pressure
+  FLOW_CONDITION boundary_pressure
   REGION north
 END
 
 BOUNDARY_CONDITION west
-  FLOW_CONDITION high_pressure
+  FLOW_CONDITION boundary_pressure
   REGION west
 END
 
 BOUNDARY_CONDITION south
-  FLOW_CONDITION high_pressure
+  FLOW_CONDITION boundary_pressure
   REGION south
 END
 
